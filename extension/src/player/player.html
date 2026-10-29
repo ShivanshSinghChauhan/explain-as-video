@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Explain as Video</title>
+  <link rel="stylesheet" href="../ui.css">
+  <link rel="stylesheet" href="player.css">
+</head>
+<body>
+  <header class="top">
+    <h1>Explain as Video</h1>
+    <span id="mode-badge" class="badge"></span>
+    <a href="../options/options.html" target="_blank" class="link">Settings</a>
+  </header>
+
+  <main>
+    <!-- 1. Review the selection -->
+    <section id="review" hidden>
+      <h2>Review the text</h2>
+      <p id="notice" class="notice" hidden></p>
+      <p id="source" class="muted"></p>
+      <label for="selection" class="label">Selected text (you can edit or paste here)</label>
+      <textarea id="selection" rows="10" spellcheck="false"></textarea>
+      <p id="counter" class="muted" aria-live="polite"></p>
+      <div id="sharing" class="callout"></div>
+      <div class="row">
+        <button id="generate" class="primary">Generate video</button>
+        <button id="generate-slides" class="primary">Create slides</button>
+        <button id="generate-demo" class="secondary" hidden>Use offline demo instead</button>
+      </div>
+      <p id="review-error" class="error" role="alert" hidden></p>
+    </section>
+
+    <!-- 2. Generating -->
+    <section id="working" hidden>
+      <div class="spinner" aria-hidden="true"></div>
+      <p id="working-text" aria-live="polite">Writing the storyboard…</p>
+      <button id="cancel" class="secondary">Cancel</button>
+    </section>
+
+    <!-- 3. Error -->
+    <section id="failure" hidden>
+      <h2>Couldn't make the video</h2>
+      <p id="failure-text" class="error" role="alert"></p>
+      <div class="row">
+        <button id="retry" class="primary">Try again</button>
+        <button id="fallback-demo" class="secondary">Use offline demo</button>
+        <button id="back" class="secondary">Back to text</button>
+      </div>
+    </section>
+
+    <!-- 4. Player -->
+    <section id="player" hidden>
+      <div class="stage">
+        <canvas id="canvas" width="1280" height="720" aria-label="Explainer video" role="img"></canvas>
+      </div>
+      <div class="controls" role="toolbar" aria-label="Playback controls">
+        <button id="prev" title="Previous scene" aria-label="Previous scene">⏮</button>
+        <button id="play" class="primary" aria-label="Play">▶ Play</button>
+        <button id="next" title="Next scene" aria-label="Next scene">⏭</button>
+        <button id="restart" title="Restart" aria-label="Restart">↺</button>
+        <span id="scene-label" class="muted"></span>
+        <span class="spacer"></span>
+        <label>Speed
+          <select id="rate">
+            <option value="0.75">0.75×</option>
+            <option value="1" selected>1×</option>
+            <option value="1.25">1.25×</option>
+            <option value="1.5">1.5×</option>
+          </select>
+        </label>
+        <label>Voice <select id="voice"></select></label>
+        <label><input type="checkbox" id="narration" checked> Narration</label>
+        <label><input type="checkbox" id="captions" checked> Captions</label>
+        <label>Theme <select id="theme" class="theme-select"></select></label>
+        <button id="to-slides" class="secondary">View as slides</button>
+      </div>
+      <p id="speech-note" class="muted" hidden></p>
+      <p id="warnings" class="muted" hidden></p>
+
+      <div class="columns">
+        <div>
+          <h2 id="sb-title"></h2>
+          <ol id="scene-list" class="scenes"></ol>
+        </div>
+        <div>
+          <h3>Export</h3>
+          <div class="row wrap">
+            <button id="dl-json" class="secondary">Storyboard (.json)</button>
+            <button id="dl-txt" class="secondary">Transcript (.txt)</button>
+            <button id="dl-vtt" class="secondary">Captions (.vtt)</button>
+            <button id="dl-srt" class="secondary">Captions (.srt)</button>
+          </div>
+          <div class="callout">
+            <strong>WebM video export</strong>
+            <p>The exported .webm is <strong>silent</strong>: it contains the animation with captions burned in, but
+              <strong>no narration audio</strong>. Browser speech synthesis is played by your operating system and
+              can't be recorded by the extension. Use the caption files above, or record your screen with system audio
+              if you need the voice.</p>
+            <p>Export runs in real time (about <span id="export-len">–</span>). Keep this tab visible while it records.</p>
+            <div class="row">
+              <button id="dl-webm" class="secondary">Export silent WebM</button>
+              <button id="cancel-webm" class="secondary" hidden>Cancel export</button>
+            </div>
+            <progress id="webm-progress" max="1" value="0" hidden></progress>
+            <p id="webm-status" class="muted" aria-live="polite"></p>
+          </div>
+          <button id="new-text" class="link-button">← Explain different text</button>
+        </div>
+      </div>
+    </section>
+    <!-- 5. Slides -->
+    <section id="slides" hidden>
+      <div class="row wrap">
+        <h2 id="deck-title" class="deck-title"></h2>
+        <span class="spacer"></span>
+        <label>Theme <select id="deck-theme" class="theme-select"></select></label>
+        <button id="to-video" class="secondary">▶ Play as video</button>
+      </div>
+      <div class="stage" id="deck-stage">
+        <canvas id="deck-canvas" width="1280" height="720" role="img" aria-label="Current slide"></canvas>
+      </div>
+      <div class="controls">
+        <button id="slide-prev" aria-label="Previous slide">◀ Prev</button>
+        <span id="slide-label" class="muted"></span>
+        <button id="slide-next" aria-label="Next slide">Next ▶</button>
+        <span class="spacer"></span>
+        <button id="present" class="primary">Present full screen</button>
+      </div>
+      <div id="thumbs" class="thumbs" aria-label="All slides"></div>
+      <h3>Speaker notes</h3>
+      <p id="slide-notes"></p>
+      <h3>Export</h3>
+      <div class="row wrap">
+        <button id="dl-png" class="secondary">This slide (.png)</button>
+        <button id="dl-png-all" class="secondary">All slides (.png)</button>
+        <button id="print-pdf" class="secondary">Print / Save as PDF</button>
+        <button id="dl-md" class="secondary">Outline (.md)</button>
+        <button id="dl-json-deck" class="secondary">Storyboard (.json)</button>
+      </div>
+      <button id="new-text-2" class="link-button">← Explain different text</button>
+    </section>
+  </main>
+  <div id="print-area"></div>
+  <script type="module" src="player.js"></script>
+</body>
+</html>

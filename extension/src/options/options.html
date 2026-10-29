@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Explain as Video — Settings</title>
+  <link rel="stylesheet" href="../ui.css">
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <header class="top"><h1>Explain as Video — Settings</h1></header>
+  <main>
+    <section class="card">
+      <h2>How to use it</h2>
+      <ol>
+        <li>Highlight text on a web page.</li>
+        <li>Click the floating <strong>Explain as video</strong> button (if enabled below), or right-click → <strong>Explain as video</strong>,
+          or click the toolbar icon, or press <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd>.</li>
+        <li>Review the text in the new tab, then press <strong>Generate video</strong>.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>Floating button</h2>
+      <label class="check"><input type="checkbox" id="floating"> Show an “Explain as video” button next to text I select</label>
+      <p class="muted">This needs Chrome's permission to run on all http/https sites. The button script only looks at your selection,
+        and nothing is sent anywhere until you click it and confirm. Without it, use the right-click menu, the toolbar icon or the shortcut —
+        those only touch the page you act on.</p>
+      <p id="floating-status" class="muted" aria-live="polite"></p>
+    </section>
+
+    <section class="card">
+      <h2>Storyboard engine</h2>
+      <label class="check"><input type="radio" name="mode" value="demo" id="mode-demo"> <strong>Demo mode</strong> — offline, no key, nothing leaves your browser. Picks key sentences; not real AI.</label>
+      <label class="check"><input type="radio" name="mode" value="gemini" id="mode-gemini"> <strong>Google Gemini API</strong> — real explanations using your own API key.</label>
+
+      <div id="gemini-box">
+        <div class="callout">
+          <strong>Before you add a key, please read:</strong>
+          <ul>
+            <li><strong>Key storage:</strong> the key is saved unencrypted in this Chrome profile (<code>chrome.storage.local</code>).
+              Anyone with access to this computer account, Chrome's developer tools, or malware on this machine could read it.
+              Don't use this on shared computers. Create a dedicated key in Google AI Studio, and delete it there if you think it leaked.</li>
+            <li><strong>What is sent:</strong> only the text you review and confirm (up to 6,000 characters) plus fixed instructions — never the rest of the page, its URL, or cookies.
+              It goes directly from your browser to <code>generativelanguage.googleapis.com</code>; there is no other server.</li>
+            <li><strong>Free tier data use:</strong> per Google's Gemini API terms, on the free (unpaid) tier Google may use your prompts and responses to improve its products,
+              and human reviewers may read them. Don't send sensitive, confidential or personal information.</li>
+            <li><strong>Limits and cost:</strong> the free tier has per-minute and per-day limits that Google sets per project, may change at any time, and are not guaranteed.
+              When they run out you'll see a "rate limit" error; Demo mode still works. If you attach billing to the key's project, usage may be charged.</li>
+            <li><strong>Region/age:</strong> Google's terms require users to be 18+; apps offered to users in the EEA, UK or Switzerland must use paid services.</li>
+          </ul>
+          <p class="muted">Checked against official sources on 2026-10-29:
+            <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noopener noreferrer">pricing</a> ·
+            <a href="https://ai.google.dev/gemini-api/docs/rate-limits" target="_blank" rel="noopener noreferrer">rate limits</a> ·
+            <a href="https://ai.google.dev/gemini-api/terms" target="_blank" rel="noopener noreferrer">terms</a> ·
+            <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">get a key</a></p>
+        </div>
+        <label class="check"><input type="checkbox" id="ack"> I understand the above and agree to send the text I confirm to Google.</label>
+
+        <label for="key" class="label">Gemini API key</label>
+        <div class="row">
+          <input type="password" id="key" autocomplete="off" spellcheck="false" placeholder="Paste key from Google AI Studio" size="44">
+          <button id="toggle-key" class="secondary" type="button">Show</button>
+        </div>
+        <p id="key-saved" class="muted"></p>
+
+        <label for="model" class="label">Model</label>
+        <select id="model"></select>
+
+        <div class="row">
+          <button id="save" class="primary">Save &amp; enable Gemini</button>
+          <button id="test" class="secondary">Test key</button>
+          <button id="clear" class="secondary">Delete saved key</button>
+        </div>
+      </div>
+      <p id="status" aria-live="polite"></p>
+    </section>
+
+    <section class="card">
+      <h2>About exported video</h2>
+      <p>WebM export records the animated slides with burned-in captions. It has <strong>no audio track</strong>: the narration comes from your
+        browser's speech synthesis, which plays through the operating system and cannot be captured by an extension. Download the .vtt/.srt
+        captions for accessibility, or use a screen recorder with system audio if you need the voice in the file.</p>
+    </section>
+  </main>
+  <script type="module" src="options.js"></script>
+</body>
+</html>

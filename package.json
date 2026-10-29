@@ -1,0 +1,20 @@
+{
+  "name": "explain-as-video",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Chrome MV3 extension: turn highlighted text into a short narrated, captioned explainer video.",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "icons": "node scripts/generate-icons.mjs",
+    "check": "node scripts/check.mjs",
+    "test": "node --test \"tests/unit/*.test.mjs\"",
+    "test:e2e": "playwright test",
+    "verify": "npm run check && npm test",
+    "package": "npm run verify && mkdir -p dist && rm -f dist/explain-as-video.zip && cd extension && zip -qr ../dist/explain-as-video.zip . -x '.*'",
+    "samples": "node scripts/render-theme-samples.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1"
+  }
+}

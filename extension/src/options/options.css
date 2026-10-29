@@ -1,0 +1,9 @@
+main { max-width: 760px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 4px 20px 12px; margin: 16px 0; }
+.check { display: block; margin: 8px 0; }
+.callout ul { padding-left: 18px; margin: 6px 0; }
+.callout li { margin: 6px 0; }
+kbd { border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; font-size: 13px; }
+#status.ok { color: #15803d; font-weight: 600; }
+#status.bad { color: var(--err); font-weight: 600; }
+input[type=password], input[type=text] { width: min(100%, 420px); }
